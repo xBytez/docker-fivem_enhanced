@@ -1,0 +1,6 @@
+alchemist*.zip
+**/bin/
+**/obj/
+compat/
+openshift/
+CSHARP-README.md

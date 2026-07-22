@@ -1,0 +1,89 @@
+name: Update and publish Enhanced image
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: fivem-enhanced
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_IMAGE: docker.io/xbytez/fivem-enhanced
+      GHCR_IMAGE: ghcr.io/xbytez/fivem-enhanced
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Find the latest Enhanced Linux build
+        id: release
+        run: ./scripts/update-enhanced-build.sh
+
+      - name: Commit updated artifact metadata
+        if: steps.release.outputs.changed == 'true'
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add Dockerfile
+          git commit -m "Update FiveM Enhanced to build ${{ steps.release.outputs.build }} [skip ci]"
+          git push
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and publish standard image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_IMAGE }}:${{ steps.release.outputs.build }}
+            ${{ env.DOCKERHUB_IMAGE }}:latest
+            ${{ env.GHCR_IMAGE }}:${{ steps.release.outputs.build }}
+            ${{ env.GHCR_IMAGE }}:latest
+          cache-from: type=gha,scope=standard
+          cache-to: type=gha,mode=max,scope=standard
+          provenance: mode=max
+          sbom: true
+
+      - name: Build and publish C# compatibility image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          build-args: DISABLE_CSHARP_CAS=true
+          tags: |
+            ${{ env.DOCKERHUB_IMAGE }}:${{ steps.release.outputs.build }}-csharp-compat
+            ${{ env.DOCKERHUB_IMAGE }}:csharp-compat
+            ${{ env.GHCR_IMAGE }}:${{ steps.release.outputs.build }}-csharp-compat
+            ${{ env.GHCR_IMAGE }}:csharp-compat
+          cache-from: type=gha,scope=csharp-compat
+          cache-to: type=gha,mode=max,scope=csharp-compat
+          provenance: mode=max
+          sbom: true

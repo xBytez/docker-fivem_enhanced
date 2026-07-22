@@ -1,0 +1,19 @@
+services:
+  fivem:
+    build: .
+    image: fivem-enhanced:local
+    platform: linux/amd64
+    container_name: fivem
+    restart: always
+    # The Enhanced Gen9 runtime requires io_uring for txAdmin.
+    security_opt:
+      - seccomp=unconfined
+    volumes:
+      - "/path/to/resources/folder:/config"
+      - "/path/to/txData/folder:/txData"
+    ports:
+      - "30120:30120"
+      - "30120:30120/udp"
+      - "40120:40120"
+    environment:
+      LICENSE_KEY: "license-key-here"

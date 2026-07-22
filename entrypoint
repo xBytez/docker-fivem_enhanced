@@ -1,0 +1,49 @@
+#!/bin/sh
+
+if [ -n "$DEBUG" ]; then
+    set -x
+fi
+
+if ! find . -mindepth 1 | read -r _; then
+    >&2 echo "Creating default configs..."
+    cp -r /opt/cfx-server-data/* /config
+    RCON_PASS="${RCON_PASSWORD-$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 16)}"
+    sed -i "s/{RCON_PASS}/${RCON_PASS}/g" /config/server.cfg;
+    >&2 echo "----------------------------------------------"
+    >&2 echo "RCON password is set to: ${RCON_PASS}"
+    >&2 echo "----------------------------------------------"
+fi
+
+# English is hard
+if [ -z "${NO_LICENSE_KEY}${NO_LICENCE_KEY}" ]; then
+    if [ -z "${LICENSE_KEY}" ] && [ -n "${LICENCE_KEY}" ]; then
+        LICENSE_KEY="${LICENCE_KEY}"
+    fi
+
+    if [ -z "${NO_DEFAULT_CONFIG}" ] && [ -z "${LICENSE_KEY}" ]; then
+        >&2 printf "License key not found in environment, please create one at https://keymaster.fivem.net!\n"
+        exit 1
+    fi
+
+    if [ -n "${LICENSE_KEY}" ] && [ -n "${NO_DEFAULT_CONFIG}" ]; then
+        >&2 printf "txadmin does not use the \$LICENSE_KEY environment variable.\nPlease remove it and set it through the txadmin web UI\n\n"
+        exit 1
+    fi
+
+    set -- +set sv_licenseKey "${LICENSE_KEY}" "$@"
+fi
+
+if [ -z "${NO_DEFAULT_CONFIG}" ]; then
+    set -- +exec /config/server.cfg "$@"
+
+    if [ -z "$NO_ONESYNC" ]; then
+        set -- +set onesync on +set onesync_population true "$@"
+    fi
+fi
+
+exec /lib/ld-musl-x86_64.so.1 \
+    --library-path "/lib/:/usr/lib/" \
+    -- \
+    /opt/cfx-server/cfx-server \
+        +set citizen_dir /opt/cfx-server/citizen/ \
+        "$@"

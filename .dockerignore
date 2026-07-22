@@ -1,0 +1,10 @@
+.git
+.gitignore
+README.md
+docker-compose.yml
+**/bin
+**/obj
+compat
+scripts
+openshift
+alchemist.zip
