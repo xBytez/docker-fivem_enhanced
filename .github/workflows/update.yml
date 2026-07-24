@@ -55,22 +55,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and publish standard image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          platforms: linux/amd64
-          push: true
-          tags: |
-            ${{ env.DOCKERHUB_IMAGE }}:${{ steps.release.outputs.build }}
-            ${{ env.DOCKERHUB_IMAGE }}:latest
-            ${{ env.GHCR_IMAGE }}:${{ steps.release.outputs.build }}
-            ${{ env.GHCR_IMAGE }}:latest
-          cache-from: type=gha,scope=standard
-          cache-to: type=gha,mode=max,scope=standard
-          provenance: mode=max
-          sbom: true
-
       - name: Build and publish C# compatibility image
         uses: docker/build-push-action@v7
         with:
@@ -85,5 +69,21 @@ jobs:
             ${{ env.GHCR_IMAGE }}:csharp-compat
           cache-from: type=gha,scope=csharp-compat
           cache-to: type=gha,mode=max,scope=csharp-compat
+          provenance: mode=max
+          sbom: true
+
+      - name: Build and publish standard image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_IMAGE }}:${{ steps.release.outputs.build }}
+            ${{ env.DOCKERHUB_IMAGE }}:latest
+            ${{ env.GHCR_IMAGE }}:${{ steps.release.outputs.build }}
+            ${{ env.GHCR_IMAGE }}:latest
+          cache-from: type=gha,scope=standard
+          cache-to: type=gha,mode=max,scope=standard
           provenance: mode=max
           sbom: true
