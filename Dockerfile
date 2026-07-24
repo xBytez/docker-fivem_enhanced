@@ -1,6 +1,6 @@
-ARG FIVEM_NUM=94
-ARG FIVEM_URL=https://downloads.cfx-services.net/prod/019f8a75-b0f4-7dfc-8ac6-4dce4292da4a/cfx-server_linux_x64.tar.xz
-ARG FIVEM_SHA256=281f1f9004ac10ba7b4736e3a7e924ee54ca49d0344e68abd00c2a768f0a4d81
+ARG FIVEM_NUM=95
+ARG FIVEM_URL=https://downloads.cfx-services.net/prod/019f8fcf-342a-76ee-b193-234fd0b996b8/cfx-server_linux_x64.tar.xz
+ARG FIVEM_SHA256=c4619904ddf4dc4de78ff6226dba33fa052f976fa6556faa9c323099ef914295
 ARG DATA_VER=e265cb251c88260533c847d4a1a2838c7d828a66
 ARG DISABLE_CSHARP_CAS=false
 
