@@ -35,10 +35,6 @@ fi
 
 if [ -z "${NO_DEFAULT_CONFIG}" ]; then
     set -- +exec /config/server.cfg "$@"
-
-    if [ -z "$NO_ONESYNC" ]; then
-        set -- +set onesync on +set onesync_population true "$@"
-    fi
 fi
 
 exec /lib/ld-musl-x86_64.so.1 \

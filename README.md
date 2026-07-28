@@ -34,7 +34,6 @@ All of the following are read by the image's entrypoint (verified against the im
 | `LICENSE_KEY` (or `LICENCE_KEY`)  | Cfx.re server license key, injected as `sv_licenseKey`. **Required** in default-config mode. Get one at the keymaster (below).    |
 | `RCON_PASSWORD`                   | Sets the RCON password in `server.cfg`. If unset, a random 16-char password is generated and printed to the logs on first run.   |
 | `NO_DEFAULT_CONFIG`               | Skip executing `/config/server.cfg` and boot into **txAdmin mode** — configure the server (and license key) via the web UI. Do **not** set `LICENSE_KEY` in this mode. |
-| `NO_ONESYNC`                      | Disable OneSync (it's enabled by default in default-config mode).                                                                |
 | `NO_LICENSE_KEY` / `NO_LICENCE_KEY` | Skip license-key handling entirely (e.g. if you set it yourself inside `server.cfg`).                                          |
 | `DEBUG`                           | Enable shell trace (`set -x`) in the entrypoint for troubleshooting startup.                                                     |
 
