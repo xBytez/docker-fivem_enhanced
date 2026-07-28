@@ -106,3 +106,4 @@ Based on [`spritsail/fivem`](https://hub.docker.com/r/spritsail/fivem) ([GitHub]
 ## Notes
 
 - FiveM / FXServer is a product of Cfx.re. This image packages it for containerized deployment and is not affiliated with or endorsed by Cfx.re or Rockstar Games.
+- You *may* have to use seccomp profile `unconfined` and make sure you have `io_uring` enabled (sysctl: `kernel.io_uring_disabled`).
