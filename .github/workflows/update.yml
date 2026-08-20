@@ -86,24 +86,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and publish C# compatibility image
-        if: steps.gate.outputs.rebuild == 'true'
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          platforms: linux/amd64
-          push: true
-          build-args: DISABLE_CSHARP_CAS=true
-          tags: |
-            ${{ env.DOCKERHUB_IMAGE }}:${{ steps.release.outputs.build }}-csharp-compat
-            ${{ env.DOCKERHUB_IMAGE }}:csharp-compat
-            ${{ env.GHCR_IMAGE }}:${{ steps.release.outputs.build }}-csharp-compat
-            ${{ env.GHCR_IMAGE }}:csharp-compat
-          cache-from: type=gha,scope=csharp-compat
-          cache-to: type=gha,mode=max,scope=csharp-compat
-          provenance: mode=max
-          sbom: true
-
       - name: Build and publish standard image
         if: steps.gate.outputs.rebuild == 'true'
         uses: docker/build-push-action@v7
